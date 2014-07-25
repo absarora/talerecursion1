@@ -3,6 +3,11 @@ class User < ActiveRecord::Base
   #                 :remember_me, :name, :provider, :uid
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
+  has_many :story_starters, class_name: "Story", foreign_key: :story_starter_id
+  has_many :story_teams
+  has_many :sentences
+  has_many :stories, through: :story_teams
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable, :confirmable,
          :omniauthable, :omniauth_providers => [:facebook]
