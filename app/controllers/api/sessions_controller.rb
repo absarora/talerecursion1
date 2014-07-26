@@ -1,46 +1,45 @@
 class Api::SessionsController < Api::BasesController
   prepend_before_filter :require_no_authentication, :only => [:create]
-  skip_before_filter :verify_authenticity_token, :if => Proc.new { |c| c.request.format == 'application/json' }
   # before_filter :validate_auth_token, :except => :create
   # include Devise::Controllers::Helpers
   # include ApiHelper
-  
-  # before_filter :ensure_params_exist
- 
+
   respond_to :json
   
-  def create
-    build_resource
-    resource = User.find_for_database_authentication(:email => params[:user][:email])
-    return invalid_login_attempt unless resource
+  def new
  
-    if resource.valid_password?(params[:user][:password])
-      sign_in(:user, resource)
-      resource.ensure_authentication_token!
-      render :json=> {:success=>true, :auth_token=>resource.authentication_token}
-      return
+  end
+
+  def create
+   user = User.find_or_create_by(email: email_params) do |u|
+      u.name = name_params
+      u.facebook_id = id_params
     end
-    invalid_login_attempt
+    # return invalid_login_attempt unless user
+    render :json=> {:success=>true, :message=>"User is logged in!"}
   end
   
   def destroy
     sign_out(@user)
-    redirect_to :
+    redirect_to "/"
   end
- 
-  protected
-  # def ensure_params_exist
-  #   puts params
-  #   puts "------------"*5
-  #   puts "testing"
-  #   return unless params[:email].blank?
-  #   puts "------------"*5
-  #   render :json=>{:success=>false, :message=>"missing user_login parameter"}, :status=>422
-  #   puts "------------"*5
-  # end
  
   def invalid_login_attempt
     warden.custom_failure!
     render :json=> {:success=>false, :message=>"Error with your login or password"}, :status=>401
   end
+
+  private
+    def email_params
+      params.permit(:email)
+    end
+
+    def name_params
+      params.permit(:name)
+    end
+
+    def id_params
+      params.permit(:id)
+    end
+
 end
