@@ -44,3 +44,4 @@ gem 'omniauth-facebook'
 # Use debugger
 # gem 'debugger', group: [:development, :test]
 
+ruby '2.0.0'
