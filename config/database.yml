@@ -81,5 +81,4 @@ test:
 production:
   <<: *default
   database: talerecursion1_production
-  username: talerecursion1
   password: <%= ENV['TALERECURSION1_DATABASE_PASSWORD'] %>
